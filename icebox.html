@@ -104,7 +104,7 @@
         var value = parseFloat(valueEth)*1.0e18
         var nonce = parseInt(document.getElementById('nonce').value)
         var gasPrice = parseInt(document.getElementById('gasPrice').value)
-        var gas = 21000
+        var gas = parseInt(document.getElementById('gasLimit').value)
         var rawUnsignedTx = lightwallet.txutils.valueTx({to: toAddr, value: value, gasPrice: gasPrice, gasLimit: gas, nonce: nonce})
 
         lightwallet.keystore.deriveKeyFromPassword(password, function(err, pwDerivedKey) {
@@ -146,6 +146,7 @@
     <div>Ether: <input type="text" id="sendValueAmount"></div>
     <div>Nonce: <input type="text" id="nonce"></div>
     <div>Gas Price<input type="text" id="gasPrice" value=20000000000></div>
+    <div>Gas Limit<input type="text" id="gasLimit" value=21000></div>
     <div><button onclick="sendEth()">Create Transaction</button></div>
     <h3>Signed Transaction</h3>
     <div><textarea id='rawSignedTx' rows=6 cols=40></textarea></div>
