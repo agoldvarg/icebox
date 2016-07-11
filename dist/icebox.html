@@ -7,9 +7,9 @@
     <script>
 
       var global_keystore;
-      
+
       function newAddresses(password) {
-        
+
         if (password == '') {
           password = prompt('Enter password to retrieve addresses', '');
         }
@@ -19,7 +19,7 @@
           global_keystore.generateNewAddress(pwDerivedKey, numAddr);
 
           showAddresses();
-          
+
         })
       }
 
@@ -39,7 +39,7 @@
             addrString += addresses[i];
           }
         }
-        
+
         // Add link to Workflow app
         var workflowURL = 'workflow://run-workflow?name=AddressQR&input=text&text='
         document.getElementById('workflowAddr').innerHTML = '<a href="' + workflowURL + addrString + '">Address QR Codes (Workflow App)</a>';
@@ -52,17 +52,34 @@
 
       }
 
+
+
+      function showPrivateKeys() {
+          var addresses = global_keystore.getAddresses();
+
+          var privateKeyString = ''
+
+          var password = prompt('Enter password to retrieve private keys', '');
+
+          lightwallet.keystore.deriveKeyFromPassword(password, function(err, pwDerivedKey) {
+              var privateKey = global_keystore.exportPrivateKey(addresses[0], pwDerivedKey);
+              document.getElementById('private-keys').innerHTML = ''
+              document.getElementById('private-keys').innerHTML += '<div>' + privateKey + '</div>'
+          })
+      }
+
+
       function setSeed() {
 
         var password = prompt('Enter password to encrypt your seed for this session', '');
 
         lightwallet.keystore.deriveKeyFromPassword(password, function(err, pwDerivedKey) {
           global_keystore = new lightwallet.keystore(
-            document.getElementById('seed').value, 
+            document.getElementById('seed').value,
             pwDerivedKey);
 
           document.getElementById('seed').value = ''
-          
+
           newAddresses(password);
         })
 
@@ -73,7 +90,7 @@
         document.getElementById('userEntropy').value = '';
         var randomSeed = lightwallet.keystore.generateRandomSeed(extraEntropy);
 
-        var infoString = 'Your new wallet seed is: "' + randomSeed + 
+        var infoString = 'Your new wallet seed is: "' + randomSeed +
           '". Please write it down on paper, you will need it to access your wallet. Do not let anyone see this seed or they can take your Ether. Please chooses a password to encrypt your wallet for this session.'
 
         var password = prompt(infoString, '');
@@ -81,7 +98,7 @@
           global_keystore = new lightwallet.keystore(
             randomSeed,
             pwDerivedKey);
-          
+
           newAddresses(password);
           showAddresses();
         })
@@ -140,6 +157,9 @@
     <div>Show <input type="text" id="numAddr" size="5" value="3"></input> more address(es) <button onclick="newAddresses('')">Show</button></div>
     <div id="addr"></div>
     <div id="workflowAddr"></div>
+    <h2>Private Keys</h2>
+    <div><button onclick="showPrivateKeys()">Show Private Keys</button></div>
+    <div id="private-keys"></div>
     <h2>Send Ether</h2>
     <div>From: <select id="sendFrom"></select></div>
     <div>To: <input type="text" size="40" id="sendTo"></input></div>
